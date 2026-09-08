@@ -7,7 +7,9 @@ let io: SocketIOServer;
 export const initSocket = (server: HttpServer) => {
   io = new SocketIOServer(server, {
     cors: {
-      origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+      origin: (origin, callback) => {
+        return callback(null, true);
+      },
       methods: ['GET', 'POST'],
       credentials: true
     }

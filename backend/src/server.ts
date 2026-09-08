@@ -24,15 +24,45 @@ const port = process.env.PORT || 4000;
 
 initSocket(httpServer);
 
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://car-rental-and-booking-system.vercel.app',
+  process.env.FRONTEND_URL,
+].filter(Boolean) as string[];
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-  credentials: true
+  origin: (origin, callback) => {
+    // Cho phép requests không có origin (ví dụ: mobile app, server-to-server, curl)
+    if (!origin) return callback(null, true);
+
+    // Cho phép localhost, Vercel production hoặc bất kỳ preview domain nào của Vercel
+    if (
+      allowedOrigins.includes(origin) ||
+      origin.endsWith('.vercel.app') ||
+      origin.includes('localhost') ||
+      (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL.replace(/\/+$/, ''))
+    ) {
+      return callback(null, true);
+    }
+
+    return callback(null, true);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'X-Requested-With',
+    'device-fingerprint',
+    'client-timestamp',
+  ],
 }));
 app.use(express.json());
 app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/vehicles', vehiclesRoutes);
+app.use('/vehicles', vehiclesRoutes);
 app.use('/api/services', servicesRoutes);
 app.use('/api/bookings', bookingsRoutes);
 app.use('/api/drivers', driversRoutes);

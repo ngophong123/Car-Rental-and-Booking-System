@@ -1,0 +1,181 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  STAFF
+  DRIVER
+  CUSTOMER
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String
+  name          String?
+  role          Role           @default(CUSTOMER)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  refreshTokens RefreshToken[]
+  bookings      Booking[]
+  driver        Driver?
+  reviews       Review[]
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+enum VehicleStatus {
+  AVAILABLE
+  BOOKED
+  IN_TRIP
+  MAINTENANCE
+  INACTIVE
+}
+
+enum VehicleType {
+  SEAT_4
+  SEAT_7
+  SEAT_16
+  SEAT_29
+  SEAT_45
+}
+
+model Vehicle {
+  id           String        @id @default(uuid())
+  name         String
+  brand        String
+  model        String
+  licensePlate String        @unique
+  seatCount    Int
+  year         Int
+  image        String?
+  description  String?
+  basePrice    Float
+  status       VehicleStatus @default(AVAILABLE)
+  type         VehicleType   @default(SEAT_4)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  bookings     Booking[]
+  reviews      Review[]
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  ASSIGNED
+  DRIVER_ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  REJECTED
+}
+
+model Service {
+  id          String    @id @default(uuid())
+  name        String
+  slug        String    @unique
+  description String?
+  image       String?
+  basePrice   Float     @default(0)
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  bookings    Booking[]
+}
+
+model Booking {
+  id             String        @id @default(uuid())
+  customerId     String
+  customer       User          @relation(fields: [customerId], references: [id])
+  vehicleId      String
+  vehicle        Vehicle       @relation(fields: [vehicleId], references: [id])
+  serviceId      String
+  service        Service       @relation(fields: [serviceId], references: [id])
+  pickupLocation String
+  destination    String
+  passengerCount Int
+  startDate      DateTime
+  endDate        DateTime
+  notes          String?
+  totalAmount    Float
+  status         BookingStatus @default(PENDING)
+  driverId       String?
+  driver         Driver?       @relation(fields: [driverId], references: [id])
+  payment        Payment?
+  review         Review?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+enum DriverStatus {
+  AVAILABLE
+  ASSIGNED
+  ON_TRIP
+  OFF_DUTY
+}
+
+model Driver {
+  id                String       @id @default(uuid())
+  userId            String       @unique
+  user              User         @relation(fields: [userId], references: [id])
+  fullName          String
+  phone             String
+  licenseNumber     String
+  licenseType       String
+  licenseExpiryDate DateTime
+  status            DriverStatus @default(AVAILABLE)
+  active            Boolean      @default(true)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  bookings          Booking[]
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  ONLINE
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+model Payment {
+  id            String        @id @default(uuid())
+  bookingId     String        @unique
+  booking       Booking       @relation(fields: [bookingId], references: [id])
+  amount        Float
+  method        PaymentMethod @default(BANK_TRANSFER)
+  status        PaymentStatus @default(PENDING)
+  transactionId String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  rating     Int // 1 to 5
+  comment    String?
+  customerId String
+  customer   User     @relation(fields: [customerId], references: [id])
+  bookingId  String   @unique
+  booking    Booking  @relation(fields: [bookingId], references: [id])
+  vehicleId  String
+  vehicle    Vehicle  @relation(fields: [vehicleId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { Plane, Car, Users, Briefcase, CalendarHeart, Map, Sparkles, CheckCircle2, PhoneCall, ArrowRight, ShieldCheck } from "lucide-react";
+import { Plane, Car, Users, Briefcase, CalendarHeart, Map, CheckCircle2, PhoneCall, ArrowRight, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -75,9 +75,8 @@ export default function ServicesPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 bg-orange-500/20 border border-orange-500/30 text-orange-400 px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold tracking-wide mb-4"
+            className="inline-flex items-center bg-orange-500/20 border border-orange-500/30 text-orange-400 px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold tracking-wide mb-4"
           >
-            <Sparkles className="w-4 h-4 text-orange-400" />
             <span>Giải Pháp Vận Tải Toàn Diện & Đẳng Cấp</span>
           </motion.div>
 

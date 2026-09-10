@@ -10,13 +10,12 @@ import {
   Car, 
   Home, 
   Layers, 
-  Sparkles, 
   MapPin, 
   CalendarCheck, 
   ChevronRight, 
   PhoneCall, 
   ShieldCheck,
-  Bot
+  Users
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
@@ -28,7 +27,7 @@ const navLinks = [
   { name: "Trang Chủ", href: "/", icon: Home, color: "text-blue-600", bg: "bg-blue-50" },
   { name: "Đội Xe Du Lịch", href: "/vehicles", icon: Car, color: "text-orange-600", bg: "bg-orange-50", badge: "HOT" },
   { name: "Dịch Vụ Cho Thuê", href: "/services", icon: Layers, color: "text-amber-600", bg: "bg-amber-50" },
-  { name: "Về Chúng Tôi", href: "/about", icon: Sparkles, color: "text-purple-600", bg: "bg-purple-50" },
+  { name: "Về Chúng Tôi", href: "/about", icon: Users, color: "text-purple-600", bg: "bg-purple-50" },
   { name: "Liên Hệ & Hỗ Trợ", href: "/contact", icon: MapPin, color: "text-emerald-600", bg: "bg-emerald-50" },
 ];
 

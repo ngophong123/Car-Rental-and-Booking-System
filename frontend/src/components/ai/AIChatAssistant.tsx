@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { MessageSquare, X, Send, Sparkles, Car, Phone, ChevronRight, Bot, User } from "lucide-react";
+import { MessageSquare, X, Send, Car, Phone, ChevronRight, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { api } from "@/lib/axios";
@@ -34,13 +34,39 @@ const INITIAL_SUGGESTIONS = [
   "✈️ Đưa đón sân bay giá sao?"
 ];
 
+function HumanFaceIcon({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      {/* Khuôn mặt người */}
+      <circle cx="12" cy="10" r="6" />
+      {/* Tóc */}
+      <path d="M7 8.5C7.8 6.5 9.7 5 12 5s4.2 1.5 5 3.5" />
+      {/* Đôi mắt thân thiện */}
+      <circle cx="9.5" cy="9.5" r="0.65" fill="currentColor" stroke="none" />
+      <circle cx="14.5" cy="9.5" r="0.65" fill="currentColor" stroke="none" />
+      {/* Nụ cười */}
+      <path d="M9.5 12c.7 1 1.6 1.5 2.5 1.5s1.8-.5 2.5-1.5" />
+      {/* Cổ áo & vai */}
+      <path d="M5.5 20a6.5 6.5 0 0 1 13 0" />
+    </svg>
+  );
+}
+
 export function AIChatAssistant() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "welcome",
       sender: "ai",
-      text: "Xin chào! Em là Trợ lý Ảo AI của Minh Khoa. Em có thể giúp anh/chị tìm xe phù hợp, kiểm tra giá thuê và hướng dẫn thủ tục thuê xe nhanh chóng!",
+      text: "Xin chào quý khách! Em là trợ lý tư vấn của Minh Khoa Car Rental.\n\nQuý khách đang tìm xe tự lái hay có tài xế? Cần xe mấy chỗ hoặc đi tuyến nào để em hỗ trợ báo giá và gợi ý xe phù hợp nhất nhé!",
       quickSuggestions: INITIAL_SUGGESTIONS,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
@@ -121,11 +147,11 @@ export function AIChatAssistant() {
             onClick={() => setIsOpen(true)}
             className="group relative flex items-center gap-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-3.5 sm:px-5 sm:py-3.5 rounded-full shadow-2xl hover:shadow-emerald-500/25 transition-all duration-300"
           >
-            <div className="relative">
-              <Sparkles className="h-6 w-6 animate-spin text-amber-300" style={{ animationDuration: '6s' }} />
+            <div className="relative flex items-center justify-center">
+              <HumanFaceIcon className="h-6 w-6 text-white drop-shadow-xs" />
               <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-400"></span>
               </span>
             </div>
             <span className="hidden sm:inline font-semibold text-sm">Hỏi AI Tìm Xe</span>
@@ -147,11 +173,11 @@ export function AIChatAssistant() {
             <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 p-4 text-white flex items-center justify-between shadow-md">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-500 via-teal-500 to-cyan-400 text-white flex items-center justify-center shadow-md shadow-emerald-500/30 shrink-0 ring-2 ring-white/20">
-                  <Sparkles className="h-5 w-5 drop-shadow-xs" />
+                  <HumanFaceIcon className="h-6 w-6 text-white drop-shadow-xs" />
                 </div>
                 <div>
                   <h3 className="font-bold text-sm flex items-center gap-1.5 text-white">
-                    Trợ Lý AI Minh Khoa
+                    Trợ Lý Tư Vấn Minh Khoa
                     <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                   </h3>
                   <p className="text-xs text-slate-300">Tư vấn tìm xe & thủ tục 24/7</p>
@@ -175,8 +201,8 @@ export function AIChatAssistant() {
                   className={`flex gap-2.5 ${msg.sender === "user" ? "justify-end" : "justify-start items-start"}`}
                 >
                   {msg.sender === "ai" && (
-                    <div className="w-7 h-7 rounded-full bg-emerald-100 border border-emerald-200 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
-                      <Sparkles className="h-3.5 w-3.5" />
+                    <div className="w-7 h-7 rounded-full bg-emerald-100 border border-emerald-200 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+                      <HumanFaceIcon className="h-4 w-4" />
                     </div>
                   )}
                   <div
@@ -252,10 +278,10 @@ export function AIChatAssistant() {
               {/* Typing indicator */}
               {loading && (
                 <div className="flex items-center gap-2 text-slate-400 text-xs">
-                  <div className="w-8 h-8 rounded-full bg-white border flex items-center justify-center">
-                    <Bot className="h-4 w-4 text-emerald-600 animate-spin" />
+                  <div className="w-7 h-7 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center">
+                    <HumanFaceIcon className="h-4 w-4 text-emerald-600 animate-pulse" />
                   </div>
-                  <span className="animate-pulse">AI đang tìm xe tốt nhất cho bạn...</span>
+                  <span className="animate-pulse">Đang tìm kiếm xe phù hợp cho bạn...</span>
                 </div>
               )}
               <div ref={messagesEndRef} />

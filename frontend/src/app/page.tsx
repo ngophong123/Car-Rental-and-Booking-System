@@ -13,7 +13,6 @@ import {
   Shield, 
   Clock, 
   ArrowRight, 
-  Sparkles,
   Users,
   CheckCircle2,
   PhoneCall,
@@ -196,8 +195,7 @@ export default function Home() {
               transition={{ duration: 0.6, ease: "easeOut" }}
               className="lg:col-span-6 space-y-5 text-left"
             >
-              <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-600 px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold tracking-wide">
-                <Sparkles className="w-4 h-4 text-orange-500" />
+              <div className="inline-flex items-center bg-orange-500/10 border border-orange-500/20 text-orange-600 px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold tracking-wide">
                 <span>Hệ thống cho thuê xe ô tô công nghệ số 1</span>
               </div>
 
@@ -364,7 +362,6 @@ export default function Home() {
           {/* Customer Needs Filter Chips */}
           <div className="mt-5 pt-4 border-t border-slate-100">
             <div className="flex items-center gap-2 mb-2.5">
-              <Sparkles className="w-4 h-4 text-orange-500" />
               <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                 Tìm xe nhanh theo nhu cầu của bạn:
               </span>

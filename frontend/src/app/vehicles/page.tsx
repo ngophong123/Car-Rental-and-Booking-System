@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import { VehicleCard } from "@/components/shared/VehicleCard";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/axios";
-import { Car, Search, SlidersHorizontal, Sparkles, Filter, CheckCircle2 } from "lucide-react";
+import { Car, Search, SlidersHorizontal, Filter, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface Vehicle {
@@ -97,9 +97,8 @@ export default function VehiclesPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 bg-orange-500/20 border border-orange-500/30 text-orange-400 px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold tracking-wide mb-4"
+            className="inline-flex items-center bg-orange-500/20 border border-orange-500/30 text-orange-400 px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold tracking-wide mb-4"
           >
-            <Sparkles className="w-4 h-4 text-orange-400" />
             <span>Đầy Đủ Các Phân Khúc Từ 4 - 45 Chỗ</span>
           </motion.div>
 

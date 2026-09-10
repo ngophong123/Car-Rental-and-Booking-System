@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MapPin, Phone, Mail, Clock, Send, Sparkles, CheckCircle2, PhoneCall, MessageSquare } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, Send, CheckCircle2, PhoneCall, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
@@ -35,9 +35,8 @@ export default function ContactPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 bg-orange-500/20 border border-orange-500/30 text-orange-400 px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold tracking-wide mb-4"
+            className="inline-flex items-center bg-orange-500/20 border border-orange-500/30 text-orange-400 px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold tracking-wide mb-4"
           >
-            <Sparkles className="w-4 h-4 text-orange-400" />
             <span>Hỗ Trợ Trực Tuyến 24/7 - Giao Xe Tận Nơi</span>
           </motion.div>
 

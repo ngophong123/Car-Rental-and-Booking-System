@@ -154,7 +154,7 @@ export function AIChatAssistant() {
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-400"></span>
               </span>
             </div>
-            <span className="hidden sm:inline font-semibold text-sm">Hỏi AI Tìm Xe</span>
+            <span className="hidden sm:inline font-semibold text-sm">Hỏi tư vấn viên</span>
           </motion.button>
         )}
       </AnimatePresence>

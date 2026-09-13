@@ -13,6 +13,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isHydrated: boolean;
   setAuth: (user: User, accessToken: string) => void;
+  updateUser: (user: Partial<User>) => void;
   logout: () => void;
 }
 
@@ -45,6 +46,16 @@ export const useAuthStore = create<AuthState>((set) => ({
       localStorage.setItem('user', JSON.stringify(user));
     }
     set({ user, token: accessToken, isAuthenticated: true, isHydrated: true });
+  },
+  updateUser: (updatedFields) => {
+    set((state) => {
+      if (!state.user) return state;
+      const newUser = { ...state.user, ...updatedFields };
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('user', JSON.stringify(newUser));
+      }
+      return { user: newUser };
+    });
   },
   logout: () => {
     if (typeof window !== 'undefined') {

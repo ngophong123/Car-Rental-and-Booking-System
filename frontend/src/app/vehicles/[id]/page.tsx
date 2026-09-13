@@ -114,7 +114,7 @@ export default function VehicleDetailsPage() {
         <div className="lg:col-span-2 space-y-6">
           <div className="rounded-xl overflow-hidden bg-slate-100 h-[400px]">
             <img 
-              src={vehicle.image || "https://images.unsplash.com/photo-1550355291-bbee04a92027?q=80&w=2036&auto=format&fit=crop"} 
+              src={vehicle.image || "/images/cars/toyota-fortuner-black-fleet.jpg"} 
               alt={vehicle.name} 
               className="w-full h-full object-cover"
             />

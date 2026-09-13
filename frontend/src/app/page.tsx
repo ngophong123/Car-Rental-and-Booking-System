@@ -61,6 +61,7 @@ const NEED_TAGS = [
   { id: 'all', label: 'Tất cả xe' },
   { id: '4seat', label: '🚗 Xe 4 chỗ đô thị' },
   { id: '7seat', label: '👨‍👩‍👧‍👦 Xe 7 chỗ gia đình' },
+  { id: '16seat', label: '🚐 Xe 16 chỗ du lịch' },
   { id: 'electric', label: '⚡ Xe điện thông minh' },
   { id: 'suv', label: '🚙 SUV gầm cao' },
   { id: 'luxury', label: '✨ Xe sang đối tác' },
@@ -149,6 +150,8 @@ export default function Home() {
       setFilteredVehicles(vehicles.filter(v => v.seatCount === 4));
     } else if (tagId === '7seat') {
       setFilteredVehicles(vehicles.filter(v => v.seatCount === 7));
+    } else if (tagId === '16seat') {
+      setFilteredVehicles(vehicles.filter(v => v.seatCount === 16 || v.type === 'SEAT_16'));
     } else if (tagId === 'electric') {
       setFilteredVehicles(vehicles.filter(v => 
         v.name.toLowerCase().includes('vf') || 
@@ -157,9 +160,9 @@ export default function Home() {
         v.name.toLowerCase().includes('ioniq')
       ));
     } else if (tagId === 'suv') {
-      setFilteredVehicles(vehicles.filter(v => v.seatCount >= 7 || v.type === 'SEAT_7' || v.name.toLowerCase().includes('everest') || v.name.toLowerCase().includes('fortuner')));
+      setFilteredVehicles(vehicles.filter(v => v.seatCount >= 7 || v.type === 'SEAT_7' || v.name.toLowerCase().includes('everest') || v.name.toLowerCase().includes('fortuner') || v.name.toLowerCase().includes('carnival')));
     } else if (tagId === 'luxury') {
-      setFilteredVehicles(vehicles.filter(v => v.basePrice >= 2000000 || v.name.toLowerCase().includes('mercedes') || v.name.toLowerCase().includes('bmw')));
+      setFilteredVehicles(vehicles.filter(v => v.basePrice >= 1800000 || v.name.toLowerCase().includes('mercedes') || v.name.toLowerCase().includes('bmw') || v.name.toLowerCase().includes('carnival')));
     } else if (tagId === 'budget') {
       setFilteredVehicles(vehicles.filter(v => v.basePrice <= 1000000));
     }
@@ -254,9 +257,9 @@ export default function Home() {
 
               <div className="relative w-full max-w-lg mx-auto">
                 <img
-                  src="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=1000&q=80"
-                  alt="Minh Khoa Car Rental Modern Car"
-                  className="w-full h-auto object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500"
+                  src="/images/cars/ford-transit-black.jpg"
+                  alt="Minh Khoa Car Rental - Ford Transit 16 chỗ cao cấp"
+                  className="w-full h-auto object-cover rounded-2xl shadow-2xl border border-slate-100 hover:scale-105 transition-transform duration-500"
                 />
 
                 {/* Floating pill badge on car */}
@@ -448,7 +451,7 @@ export default function Home() {
                   type={mapTypeToText(vehicle.type)}
                   passengers={vehicle.seatCount}
                   luggage={vehicle.seatCount > 16 ? 10 : vehicle.seatCount > 4 ? 4 : 2}
-                  image={vehicle.image || "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=800&q=80"}
+                  image={vehicle.image || "/images/cars/toyota-fortuner-black-fleet.jpg"}
                   pricePerDay={formatPrice(vehicle.basePrice)}
                 />
               </motion.div>

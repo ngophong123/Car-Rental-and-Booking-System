@@ -227,7 +227,7 @@ export default function VehiclesPage() {
                   type={mapTypeToText(vehicle.type)}
                   passengers={vehicle.seatCount}
                   luggage={vehicle.seatCount > 16 ? 10 : vehicle.seatCount > 4 ? 4 : 2}
-                  image={vehicle.image || "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=800&q=80"}
+                  image={vehicle.image || "/images/cars/toyota-fortuner-black-fleet.jpg"}
                   pricePerDay={formatPrice(vehicle.basePrice)}
                 />
               </motion.div>

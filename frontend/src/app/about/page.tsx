@@ -83,8 +83,8 @@ export default function AboutPage() {
               className="lg:col-span-6 relative w-full h-[320px] sm:h-[460px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200"
             >
               <Image
-                src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=2070&auto=format&fit=crop"
-                alt="Minh Khoa Fleet Story"
+                src="/images/cars/toyota-fortuner-black-fleet.jpg"
+                alt="Đội xe Minh Khoa - Dàn xe Fortuner cao cấp"
                 fill
                 className="object-cover hover:scale-105 transition-transform duration-700"
               />

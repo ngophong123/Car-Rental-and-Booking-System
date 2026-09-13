@@ -227,7 +227,7 @@ export function AIChatAssistant() {
                               className="bg-slate-50 hover:bg-emerald-50/60 transition-colors border rounded-xl p-2 flex items-center gap-3"
                             >
                               <img
-                                src={v.image || "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=300&q=80"}
+                                src={v.image || "/images/cars/toyota-fortuner-black-fleet.jpg"}
                                 alt={v.name}
                                 className="w-16 h-12 rounded-lg object-cover shrink-0"
                               />

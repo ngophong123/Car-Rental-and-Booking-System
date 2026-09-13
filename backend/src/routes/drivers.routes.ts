@@ -5,6 +5,8 @@ import {
   updateDriverStatus
 } from '../controllers/drivers.controller';
 import { requireAuth, requireRole } from '../middlewares/auth.middleware';
+import { validateBody, validateParams } from '../middlewares/validate.middleware';
+import { createDriverSchema, updateDriverStatusSchema, uuidParamSchema } from '../validators';
 
 const router = Router();
 
@@ -12,7 +14,7 @@ const router = Router();
 router.use(requireAuth, requireRole(['ADMIN', 'STAFF']));
 
 router.get('/', getAllDrivers);
-router.post('/', createDriver);
-router.patch('/:id/status', updateDriverStatus);
+router.post('/', validateBody(createDriverSchema), createDriver);
+router.patch('/:id/status', validateParams(uuidParamSchema), validateBody(updateDriverStatusSchema), updateDriverStatus);
 
 export default router;

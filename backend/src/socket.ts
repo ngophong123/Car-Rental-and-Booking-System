@@ -1,14 +1,37 @@
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import { Server as HttpServer } from 'http';
-import jwt from 'jsonwebtoken';
+import { verifyAccessToken } from './utils/jwt.util';
 
 let io: SocketIOServer;
+
+export const isAllowedOrigin = (origin?: string): boolean => {
+  if (!origin) return true;
+  const cleanOrigin = origin.replace(/\/+$/, '');
+  const allowed = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'https://car-rental-and-booking-system.vercel.app',
+    process.env.FRONTEND_URL ? process.env.FRONTEND_URL.replace(/\/+$/, '') : null
+  ].filter(Boolean) as string[];
+
+  if (allowed.includes(cleanOrigin)) return true;
+
+  // Only allow valid Vercel project preview deployments for this specific project
+  if (/^https:\/\/car-rental-and-booking-system(-[a-zA-Z0-9_-]+)?\.vercel\.app$/.test(cleanOrigin)) {
+    return true;
+  }
+
+  return false;
+};
 
 export const initSocket = (server: HttpServer) => {
   io = new SocketIOServer(server, {
     cors: {
       origin: (origin, callback) => {
-        return callback(null, true);
+        if (isAllowedOrigin(origin)) {
+          return callback(null, true);
+        }
+        return callback(new Error('Not allowed by CORS for Socket.io'));
       },
       methods: ['GET', 'POST'],
       credentials: true
@@ -16,16 +39,16 @@ export const initSocket = (server: HttpServer) => {
   });
 
   io.use((socket, next) => {
-    const token = socket.handshake.auth.token;
-    if (!token) {
-      return next(new Error('Authentication error'));
+    const token = socket.handshake.auth?.token;
+    if (!token || typeof token !== 'string') {
+      return next(new Error('Authentication error: Token required'));
     }
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret') as any;
+      const decoded = verifyAccessToken(token);
       (socket as any).user = decoded;
       next();
     } catch (err) {
-      return next(new Error('Authentication error'));
+      return next(new Error('Authentication error: Invalid token'));
     }
   });
 
@@ -42,10 +65,8 @@ export const initSocket = (server: HttpServer) => {
       socket.join('admin');
     }
 
-    console.log(`User connected to socket: ${user?.userId}`);
-
     socket.on('disconnect', () => {
-      console.log(`User disconnected from socket: ${user?.userId}`);
+      // Clean disconnect
     });
   });
 

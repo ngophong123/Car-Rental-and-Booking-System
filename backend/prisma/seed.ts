@@ -103,17 +103,43 @@ async function main() {
       image: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=800&q=80'
     },
     {
-      name: 'Mitsubishi Xpander Premium 2023',
-      brand: 'Mitsubishi',
-      model: 'Xpander Premium',
+      name: 'Kia Carnival VIP 7 Chỗ',
+      brand: 'Kia',
+      model: 'Carnival Royal',
       licensePlate: '51L-123.45',
+      seatCount: 7,
+      year: 2024,
+      type: VehicleType.SEAT_7,
+      basePrice: 1800000,
+      status: VehicleStatus.AVAILABLE,
+      description: 'MPV hạng sang cao cấp nhất, ghế thương gia, nội thất đẳng cấp dành cho VIP và gia đình.',
+      image: '/images/cars/kia-carnival-black.jpg'
+    },
+    {
+      name: 'Toyota Innova 7 Chỗ',
+      brand: 'Toyota',
+      model: 'Innova',
+      licensePlate: '30F-045.60',
       seatCount: 7,
       year: 2023,
       type: VehicleType.SEAT_7,
       basePrice: 900000,
       status: VehicleStatus.AVAILABLE,
       description: 'MPV 7 chỗ rộng rãi, gầm cao, máy êm, phù hợp cho gia đình đông người và du lịch.',
-      image: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=800&q=80'
+      image: '/images/cars/toyota-innova-7seat.jpg'
+    },
+    {
+      name: 'Toyota Fortuner Đội Xe',
+      brand: 'Toyota',
+      model: 'Fortuner Legender',
+      licensePlate: '30G-721.22',
+      seatCount: 7,
+      year: 2023,
+      type: VehicleType.SEAT_7,
+      basePrice: 1300000,
+      status: VehicleStatus.AVAILABLE,
+      description: 'Dàn xe SUV 7 chỗ hiện đại, động cơ dầu mạnh mẽ, sang trọng và tiện nghi.',
+      image: '/images/cars/toyota-fortuner-black-fleet.jpg'
     },
     {
       name: 'Toyota Fortuner Legender 2023',
@@ -125,8 +151,47 @@ async function main() {
       type: VehicleType.SEAT_7,
       basePrice: 1300000,
       status: VehicleStatus.AVAILABLE,
-      description: 'SUV 7 chỗ hầm hố, động cơ dầu mạnh mẽ, vượt mọi địa hình, sang trọng đẳng cấp.',
-      image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=800&q=80'
+      description: 'SUV 7 chỗ hầm hố, động cơ dầu mạnh mẽ, sang trọng phục vụ công tác và du lịch.',
+      image: '/images/cars/toyota-fortuner-black-fleet.jpg'
+    },
+    {
+      name: 'Ford Transit Luxury 16 Chỗ (Đen)',
+      brand: 'Ford',
+      model: 'Transit Luxury',
+      licensePlate: '29F-050.78',
+      seatCount: 16,
+      year: 2024,
+      type: VehicleType.SEAT_16,
+      basePrice: 1600000,
+      status: VehicleStatus.AVAILABLE,
+      description: 'Xe du lịch 16 chỗ màu đen sang trọng đỗ sảnh resort, ghế da ngả êm ái, phục vụ VIP.',
+      image: '/images/cars/ford-transit-black.jpg'
+    },
+    {
+      name: 'Ford Transit 16 Chỗ (Bạc Showroom)',
+      brand: 'Ford',
+      model: 'Transit Mid',
+      licensePlate: '29F-025.75',
+      seatCount: 16,
+      year: 2024,
+      type: VehicleType.SEAT_16,
+      basePrice: 1500000,
+      status: VehicleStatus.AVAILABLE,
+      description: 'Xe du lịch 16 chỗ màu bạc mới xuất xưởng, máy dầu bốc êm, trang bị hiện đại.',
+      image: '/images/cars/ford-transit-silver-showroom.jpg'
+    },
+    {
+      name: 'Ford Transit 16 Chỗ Xe Hợp Đồng',
+      brand: 'Ford',
+      model: 'Transit Standard',
+      licensePlate: '29H-883.26',
+      seatCount: 16,
+      year: 2023,
+      type: VehicleType.SEAT_16,
+      basePrice: 1400000,
+      status: VehicleStatus.AVAILABLE,
+      description: 'Xe hợp đồng đưa đón đoàn, tour du lịch, công nhân viên và học sinh uy tín.',
+      image: '/images/cars/ford-transit-silver-front.jpg'
     },
     {
       name: 'Ford Everest Titanium 4x4',
@@ -220,12 +285,204 @@ async function main() {
         amount: 4500000,
         method: 'BANK_TRANSFER',
         status: 'COMPLETED',
-        transactionId: 'VNPAY-TRANS-987654'
+        paidAt: new Date(Date.now() - 250000000),
+        transactionId: 'MB-TRANS-987654',
       }
     });
 
     console.log('✅ Sample bookings & payments seeded successfully');
   }
+
+  // 6. Seed Additional Diverse Customers & Payments for Admin Showcase
+  const customerList = [
+    { name: 'Trần Thị Mai Phương', email: 'phuong.tran@gmail.com', phone: '0912345678', status: 'ACTIVE' as const },
+    { name: 'Lê Hoàng Long', email: 'long.le@viettel.vn', phone: '0987654321', status: 'ACTIVE' as const },
+    { name: 'Phạm Minh Tuấn', email: 'tuan.pham@fpt.com', phone: '0933221100', status: 'SUSPENDED' as const },
+    { name: 'Đặng Thùy Dương', email: 'duong.dang@vinhomes.vn', phone: '0944556677', status: 'BLOCKED' as const },
+    { name: 'Vũ Quốc Cường', email: 'cuong.vu@techcombank.com.vn', phone: '0977889900', status: 'ACTIVE' as const },
+  ];
+
+  const transitVehicle = await prisma.vehicle.findFirst({ where: { licensePlate: '29F-050.78' } });
+  const innovaVehicle = await prisma.vehicle.findFirst({ where: { licensePlate: '30F-045.60' } });
+  const fortunerVehicle = await prisma.vehicle.findFirst({ where: { licensePlate: '30G-721.22' } });
+
+  for (let i = 0; i < customerList.length; i++) {
+    const c = customerList[i];
+    const user = await prisma.user.upsert({
+      where: { email: c.email },
+      update: { name: c.name, phone: c.phone, status: c.status, isDeleted: false },
+      create: {
+        email: c.email,
+        name: c.name,
+        phone: c.phone,
+        status: c.status,
+        role: 'CUSTOMER',
+        password: customerPassword,
+        lastLoginAt: new Date(Date.now() - (i + 1) * 3600000 * 24),
+      }
+    });
+
+    // Seed bookings for active customers
+    if (c.status === 'ACTIVE' && sampleService && innovaVehicle && transitVehicle) {
+      const selectedVehicle = i % 2 === 0 ? transitVehicle : innovaVehicle;
+      const amount = i % 2 === 0 ? 3200000 : 1800000;
+      const bId = `booking-extra-00${i + 1}`;
+
+      const newBooking = await prisma.booking.upsert({
+        where: { id: bId },
+        update: {},
+        create: {
+          id: bId,
+          customerId: user.id,
+          vehicleId: selectedVehicle.id,
+          serviceId: sampleService.id,
+          pickupLocation: 'Khu đô thị Vinhomes Ocean Park, Gia Lâm, Hà Nội',
+          destination: 'Hạ Long, Quảng Ninh (2 ngày 1 đêm)',
+          passengerCount: 4,
+          startDate: new Date(Date.now() - (i + 2) * 86400000),
+          endDate: new Date(Date.now() - (i + 1) * 86400000),
+          totalAmount: amount,
+          status: i === 0 ? 'COMPLETED' : i === 1 ? 'COMPLETED' : 'CONFIRMED',
+        }
+      });
+
+      // Seed payment
+      const pStatus = i === 0 ? 'COMPLETED' : i === 1 ? 'REFUNDED' : 'PENDING';
+      const createdPayment = await prisma.payment.upsert({
+        where: { bookingId: newBooking.id },
+        update: { status: pStatus },
+        create: {
+          bookingId: newBooking.id,
+          amount,
+          method: 'BANK_TRANSFER',
+          status: pStatus,
+          paidAt: pStatus !== 'PENDING' ? new Date(Date.now() - (i + 2) * 80000000) : null,
+          transactionId: `FT-${Date.now().toString(36).toUpperCase()}-${i + 10}`,
+        }
+      });
+
+      // If refunded, seed refund record
+      if (pStatus === 'REFUNDED') {
+        const existingRefund = await prisma.refund.findFirst({ where: { paymentId: createdPayment.id } });
+        if (!existingRefund) {
+          await prisma.refund.create({
+            data: {
+              paymentId: createdPayment.id,
+              amount,
+              reason: 'Khách hàng thay đổi kế hoạch chuyến đi trước 48 giờ theo chính sách hủy miễn phí',
+              adminId: admin.id,
+              status: 'COMPLETED',
+            }
+          });
+        }
+      }
+    }
+  }
+  console.log('✅ Rich customer & payment history seeded successfully');
+
+  // 7. Seed Initial System Settings
+  const defaultSettings = [
+    {
+      key: 'general',
+      value: {
+        companyName: 'Minh Khoa – Car Rental & Travel',
+        logo: '/images/logo.png',
+        websiteTitle: 'Minh Khoa | Cho Thuê Xe Tự Lái & Có Tài Xế Chuyên Nghiệp',
+        websiteDescription: 'Dịch vụ cho thuê xe ô tô 4 - 45 chỗ đời mới, giao xe tận nơi, thủ tục đơn giản, uy tín hàng đầu.',
+        hotline: '0988 888 888',
+        email: 'contact@minhkhoa.com',
+        address: 'Số 68 Đường Cầu Giấy, Quận Cầu Giấy, Hà Nội',
+        workingHours: '06:00 - 23:00 (Hàng ngày, kể cả Lễ Tết)',
+      }
+    },
+    {
+      key: 'contact',
+      value: {
+        hotline: '0988 888 888',
+        email: 'support@minhkhoa.com',
+        facebook: 'https://facebook.com/minhkhoacarrental',
+        zalo: 'https://zalo.me/0988888888',
+        googleMaps: 'https://maps.google.com/?q=Hanoi',
+        address: 'Số 68 Đường Cầu Giấy, Hà Nội',
+      }
+    },
+    {
+      key: 'booking',
+      value: {
+        minBookingDurationDays: 1,
+        maxBookingDurationDays: 30,
+        advanceBookingDays: 90,
+        cancellationPolicy: 'Miễn phí hủy chuyến trước 24 giờ nhận xe. Hủy trong vòng 24h tính phí 30% giá trị hợp đồng.',
+        lateReturnPolicyHourlyFee: 100000,
+        requireAdminApproval: true,
+        allowSelfDrive: true,
+        allowDriverService: true,
+      }
+    },
+    {
+      key: 'payment',
+      value: {
+        cashEnabled: true,
+        bankTransferEnabled: true,
+        cardEnabled: false,
+        eWalletEnabled: false,
+        bankName: 'Ngân hàng Quân Đội (MB Bank)',
+        accountName: 'CONG TY TNHH MINH KHOA TRAVEL',
+        accountNumber: '0988888888',
+        branch: 'Chi nhánh Cầu Giấy - Hà Nội',
+        qrCodeUrl: '/images/qr-bank.png',
+      }
+    },
+    {
+      key: 'notifications',
+      value: {
+        emailBookingConfirmation: true,
+        emailBookingCancellation: true,
+        emailPaymentConfirmation: true,
+        emailAdminAlerts: true,
+      }
+    },
+    {
+      key: 'security',
+      value: {
+        minPasswordLength: 8,
+        requireUppercase: false,
+        requireNumber: true,
+        requireSpecialChar: false,
+        sessionTimeoutMinutes: 60,
+        maxLoginAttempts: 5,
+        twoFactorEnabled: false,
+      }
+    }
+  ];
+
+  for (const s of defaultSettings) {
+    await prisma.systemSetting.upsert({
+      where: { key: s.key },
+      update: { value: s.value },
+      create: { key: s.key, value: s.value, updatedBy: admin.email }
+    });
+  }
+  console.log('✅ System settings initialized');
+
+  // 8. Seed Sample Audit Logs
+  const sampleLogs = [
+    { action: 'ADMIN_LOGIN', resource: 'AUTH', details: { method: 'EMAIL_PASSWORD' }, adminEmail: admin.email, adminId: admin.id },
+    { action: 'VEHICLE_UPDATE', resource: 'VEHICLE', resourceId: 'transit-16', details: { name: 'Ford Transit Luxury 16 Chỗ (Đen)' }, adminEmail: admin.email, adminId: admin.id },
+    { action: 'PAYMENT_CONFIRM', resource: 'PAYMENT', resourceId: 'MB-TRANS-987654', details: { amount: 4500000 }, adminEmail: admin.email, adminId: admin.id },
+    { action: 'SETTINGS_UPDATE', resource: 'SETTING', resourceId: 'booking', details: { minBookingDurationDays: 1 }, adminEmail: admin.email, adminId: admin.id },
+  ];
+
+  for (const log of sampleLogs) {
+    await prisma.auditLog.create({
+      data: {
+        ...log,
+        ipAddress: '127.0.0.1',
+        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+      }
+    });
+  }
+  console.log('✅ Sample audit logs seeded');
 
   console.log('🎉 Seeding completed successfully!');
 }

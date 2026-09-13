@@ -38,10 +38,22 @@ export const cacheData = (prefix: string, ttl: number = 3600) => {
 
 export const clearCache = async (prefix: string) => {
   try {
-    const keys = await redisClient.keys(`${prefix}:*`);
-    if (keys.length > 0) {
-      await redisClient.del(keys);
-    }
+    const stream = redisClient.scanStream({
+      match: `${prefix}:*`,
+      count: 100
+    });
+    stream.on('data', async (keys: string[]) => {
+      if (keys.length > 0) {
+        try {
+          await redisClient.del(...keys);
+        } catch (e) {
+          // Ignore key deletion errors
+        }
+      }
+    });
+    stream.on('error', (err) => {
+      console.warn('Redis clear cache scan error:', err);
+    });
   } catch (error) {
     console.error('Redis clear cache error:', error);
   }

@@ -6,6 +6,12 @@ datasource db {
   provider = "postgresql"
 }
 
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  BLOCKED
+}
+
 enum Role {
   ADMIN
   STAFF
@@ -14,17 +20,23 @@ enum Role {
 }
 
 model User {
-  id            String         @id @default(uuid())
-  email         String         @unique
-  password      String
-  name          String?
-  role          Role           @default(CUSTOMER)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  refreshTokens RefreshToken[]
-  bookings      Booking[]
-  driver        Driver?
-  reviews       Review[]
+  id             String         @id @default(uuid())
+  email          String         @unique
+  password       String
+  name           String?
+  phone          String?
+  avatar         String?
+  role           Role           @default(CUSTOMER)
+  status         UserStatus     @default(ACTIVE)
+  isDeleted      Boolean        @default(false)
+  lastLoginAt    DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  refreshTokens  RefreshToken[]
+  bookings       Booking[]
+  driver         Driver?
+  reviews        Review[]
+  handledRefunds Refund[]
 }
 
 model RefreshToken {
@@ -151,19 +163,71 @@ enum PaymentMethod {
 enum PaymentStatus {
   PENDING
   COMPLETED
+  PAID
   FAILED
+  CANCELLED
+  REFUNDED
+  PARTIALLY_REFUNDED
 }
 
 model Payment {
-  id            String        @id @default(uuid())
-  bookingId     String        @unique
-  booking       Booking       @relation(fields: [bookingId], references: [id])
-  amount        Float
-  method        PaymentMethod @default(BANK_TRANSFER)
-  status        PaymentStatus @default(PENDING)
-  transactionId String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id             String        @id @default(uuid())
+  bookingId      String        @unique
+  booking        Booking       @relation(fields: [bookingId], references: [id])
+  amount         Float
+  method         PaymentMethod @default(BANK_TRANSFER)
+  status         PaymentStatus @default(PENDING)
+  transactionId  String?
+  paidAt         DateTime?
+  idempotencyKey String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  refunds        Refund[]
+
+  @@index([idempotencyKey])
+}
+
+enum RefundStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+model Refund {
+  id        String       @id @default(uuid())
+  paymentId String
+  payment   Payment      @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  amount    Float
+  reason    String
+  adminId   String
+  admin     User         @relation(fields: [adminId], references: [id])
+  status    RefundStatus @default(COMPLETED)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model SystemSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+  updatedBy String?
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  adminId    String?
+  adminEmail String?
+  action     String
+  resource   String
+  resourceId String?
+  details    Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  @@index([action])
+  @@index([resource])
+  @@index([createdAt])
 }
 
 model Review {

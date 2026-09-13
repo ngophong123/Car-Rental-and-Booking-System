@@ -1,12 +1,6 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
-import { Pool } from 'pg';
-import { PrismaPg } from '@prisma/adapter-pg';
+import { prisma } from '../prisma';
 import { getIO } from '../socket';
-
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
 
 export const createBooking = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -16,25 +10,63 @@ export const createBooking = async (req: Request, res: Response): Promise<void> 
     const start = new Date(startDate);
     const end = new Date(endDate);
 
-    if (start >= end) {
-      res.status(400).json({ success: false, message: 'Start date must be before end date', data: null });
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      res.status(400).json({ success: false, message: 'Định dạng ngày tháng không hợp lệ', data: null });
       return;
     }
 
-    // Double Booking Check using Prisma Transaction
+    if (start >= end) {
+      res.status(400).json({ success: false, message: 'Thời gian bắt đầu phải trước thời gian kết thúc', data: null });
+      return;
+    }
+
+    // Past date check with 5 minutes clock drift margin
+    const minAllowedStart = new Date(Date.now() - 5 * 60 * 1000);
+    if (start < minAllowedStart) {
+      res.status(400).json({ success: false, message: 'Thời gian bắt đầu chuyến đi không thể ở trong quá khứ', data: null });
+      return;
+    }
+
+    // Maximum trip duration (e.g. 90 days)
+    const maxTripMs = 90 * 24 * 3600 * 1000;
+    if (end.getTime() - start.getTime() > maxTripMs) {
+      res.status(400).json({ success: false, message: 'Thời gian thuê xe tối đa không được vượt quá 90 ngày', data: null });
+      return;
+    }
+
+    // Atomic Booking Transaction with Serializable Isolation to eliminate race conditions
     const booking = await prisma.$transaction(async (tx) => {
-      // Find overlapping bookings for this vehicle that are not cancelled or rejected
+      // 1. Check vehicle existence and availability
+      const vehicle = await tx.vehicle.findUnique({ where: { id: vehicleId } });
+      if (!vehicle) {
+        throw new Error('VEHICLE_NOT_FOUND');
+      }
+      if (vehicle.status !== 'AVAILABLE') {
+        throw new Error('VEHICLE_NOT_AVAILABLE');
+      }
+
+      // 2. Validate passenger count against vehicle capacity
+      const passengers = Number(passengerCount);
+      if (passengers > vehicle.seatCount) {
+        throw new Error('EXCEEDS_CAPACITY');
+      }
+
+      // 3. Check service existence and active status
+      const service = await tx.service.findUnique({ where: { id: serviceId } });
+      if (!service || !service.active) {
+        throw new Error('SERVICE_NOT_FOUND');
+      }
+
+      // 4. Overlapping booking check (startDate < end AND endDate > start)
       const overlappingBookings = await tx.booking.findMany({
         where: {
           vehicleId,
           status: {
             in: ['PENDING', 'CONFIRMED', 'ASSIGNED', 'DRIVER_ACCEPTED', 'IN_PROGRESS']
           },
-          OR: [
-            {
-              startDate: { lte: end },
-              endDate: { gte: start }
-            }
+          AND: [
+            { startDate: { lt: end } },
+            { endDate: { gt: start } }
           ]
         }
       });
@@ -43,14 +75,11 @@ export const createBooking = async (req: Request, res: Response): Promise<void> 
         throw new Error('VEHICLE_UNAVAILABLE');
       }
 
-      // Calculate total amount (simplified for now, ideally depends on service basePrice and days)
-      const service = await tx.service.findUnique({ where: { id: serviceId } });
-      const vehicle = await tx.vehicle.findUnique({ where: { id: vehicleId } });
+      // 5. Calculate total amount strictly from database rates
+      const days = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 3600 * 24)));
+      const totalAmount = (service.basePrice || 0) + (vehicle.basePrice || 0) * days;
 
-      const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 3600 * 24)) || 1;
-      const totalAmount = (service?.basePrice || 0) + (vehicle?.basePrice || 0) * days;
-
-      // Create Booking
+      // 6. Create booking
       return await tx.booking.create({
         data: {
           customerId,
@@ -58,34 +87,52 @@ export const createBooking = async (req: Request, res: Response): Promise<void> 
           serviceId,
           pickupLocation,
           destination,
-          passengerCount: Number(passengerCount),
+          passengerCount: passengers,
           startDate: start,
           endDate: end,
-          notes,
+          notes: notes ? String(notes).trim().slice(0, 1000) : null,
           totalAmount,
           status: 'PENDING'
         }
       });
+    }, {
+      isolationLevel: 'Serializable'
     });
 
-    res.status(201).json({ success: true, message: 'Booking created successfully', data: { booking } });
+    res.status(201).json({ success: true, message: 'Đặt chuyến thành công', data: { booking } });
 
-    // Emit to admins
+    // Notify admins via socket
     try {
       getIO().to('admin').emit('booking:created', {
         bookingId: booking.id,
         customerId
       });
     } catch (e) {
-      console.error('Socket error', e);
+      console.warn('Socket emit error on booking:created:', e);
     }
   } catch (error: any) {
-    if (error.message === 'VEHICLE_UNAVAILABLE') {
-      res.status(400).json({ success: false, message: 'Xe đã được đặt trong khoảng thời gian này', data: null });
+    if (error.message === 'VEHICLE_NOT_FOUND') {
+      res.status(404).json({ success: false, message: 'Không tìm thấy xe yêu cầu', data: null });
       return;
     }
-    console.error(error);
-    res.status(500).json({ success: false, message: 'Server error', data: null });
+    if (error.message === 'VEHICLE_NOT_AVAILABLE') {
+      res.status(400).json({ success: false, message: 'Xe hiện không khả dụng để đặt (đang bảo dưỡng hoặc ngưng hoạt động)', data: null });
+      return;
+    }
+    if (error.message === 'EXCEEDS_CAPACITY') {
+      res.status(400).json({ success: false, message: 'Số lượng hành khách vượt quá số chỗ ngồi của xe', data: null });
+      return;
+    }
+    if (error.message === 'SERVICE_NOT_FOUND') {
+      res.status(404).json({ success: false, message: 'Dịch vụ đã chọn không tồn tại hoặc đã ngừng hoạt động', data: null });
+      return;
+    }
+    if (error.message === 'VEHICLE_UNAVAILABLE') {
+      res.status(400).json({ success: false, message: 'Xe đã có người đặt trong khoảng thời gian này. Vui lòng chọn khung giờ khác!', data: null });
+      return;
+    }
+    console.error('Create booking error:', error);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi tạo đơn đặt xe', data: null });
   }
 };
 
@@ -144,14 +191,23 @@ export const getBookingById = async (req: Request, res: Response): Promise<void>
       return;
     }
 
-    if (role !== 'ADMIN' && role !== 'STAFF' && booking.customerId !== userId) {
-      res.status(403).json({ success: false, message: 'Access denied', data: null });
+    if (role === 'CUSTOMER' && booking.customerId !== userId) {
+      res.status(403).json({ success: false, message: 'Bạn không có quyền truy cập đơn đặt xe này', data: null });
       return;
+    }
+
+    if (role === 'DRIVER') {
+      const driver = await prisma.driver.findUnique({ where: { userId } });
+      if (!driver || booking.driverId !== driver.id) {
+        res.status(403).json({ success: false, message: 'Bạn không có quyền truy cập đơn đặt xe này', data: null });
+        return;
+      }
     }
 
     res.status(200).json({ success: true, message: 'Booking retrieved', data: { booking } });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Server error', data: null });
+    console.error('Error fetching booking by id:', error);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ', data: null });
   }
 };
 

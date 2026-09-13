@@ -1,11 +1,5 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
-import { Pool } from 'pg';
-import { PrismaPg } from '@prisma/adapter-pg';
-
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
+import { prisma } from '../prisma';
 
 export const getDashboardStats = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -56,8 +50,8 @@ export const getDashboardStats = async (req: Request, res: Response): Promise<vo
 
     res.status(200).json({ success: true, message: 'Stats retrieved', data: { stats } });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: 'Server error', data: null });
+    console.error('Error fetching dashboard stats:', error);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi lấy số liệu thống kê', data: null });
   }
 };
 
@@ -99,7 +93,7 @@ export const getDashboardCharts = async (req: Request, res: Response): Promise<v
 
     res.status(200).json({ success: true, message: 'Chart data retrieved', data: { chartData } });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: 'Server error', data: null });
+    console.error('Error fetching dashboard charts:', error);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ khi tải biểu đồ', data: null });
   }
 };
